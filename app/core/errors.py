@@ -20,7 +20,6 @@ class AppError(Exception):
         self.details = details or []
 
 class InvalidRequest(AppError):
-
     status_code = 400
     code = "VALIDATION_ERROR"
 
