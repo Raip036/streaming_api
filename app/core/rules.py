@@ -12,3 +12,4 @@ def age_on(dob: date, today: date) -> int:
 
 def is_adult(dob: date, today: date, minimum_age: int = 18) -> bool:
     return age_on(dob, today) >= minimum_age
+
