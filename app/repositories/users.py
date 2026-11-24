@@ -18,7 +18,7 @@ class InMemoryUserRepository:
 
     def __init__(self) -> None:
         self._users: dict[str, User] = {}
-        self._lock - Lock()
+        self._lock = Lock()
 
     @staticmethod
     def _key(username: str) -> str:
@@ -34,7 +34,7 @@ class InMemoryUserRepository:
 
     def exists(self, username: str) -> bool:
         with self._lock:
-            return self._key(username in self._users)
+            return self._key(username) in self._users
 
     def find_all(self, has_card: bool | None = None) -> list[User]:
         with self._lock:

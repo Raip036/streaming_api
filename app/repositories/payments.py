@@ -20,4 +20,5 @@ class InMemoryPaymentRepository:
     def find_all(self) -> list[Payment]:
         with self._lock:
             return list(self._payments)
-        
+
+    
