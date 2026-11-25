@@ -20,9 +20,10 @@ def register_user(
         password_hash=hash_password(data.password),
         email=data.email,
         dob=data.dob,
-        credit_card_number=data.credit_card_number
+        credit_card_number=data.credit_card_number,
         registered_at=now,
     )
+    
 
     if not users.add(user):
         raise UsernameTaken("This username is already registered")
