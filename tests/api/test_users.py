@@ -22,6 +22,14 @@ def test_successful_registration_returns_201(client, valid_user):
     assert body["creditCard"] == "************5678"
     assert "registeredAt" in body
 
+
+def test_registration_without_a_credit_card_returns_201(client, valid_user):
+    del valid_user["creditCardNumber"]
+    response = client.post("/users", json=valid_user)
+
+    assert response.status_code == 201
+    assert response.json()["creditCard"] is None
+
 @pytest.mark.parametrize(
     ("field", "bad_value"),
     [
@@ -47,6 +55,12 @@ def test_invalid_field_returns_400(client, valid_user, field, bad_value):
     error = response.json()["error"]
     assert error["code"] == "VALIDATION_ERROR"
     assert error["details"][0]["field"] == field
+
+
+@pytest.mark.parametrize("field", ["username", "password", "email", "dob"])
+def test_missing_required_field_returns_400(client, valid_user, field):
+    del valid_user[field]
+    assert client.post("/users", json=valid_user).status_code == 400
 
 def test_malformed_json_returns_400(client):
     response = client.post(
@@ -76,6 +90,12 @@ def test_username_already_used_returns_409(client, valid_user):
 
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "USERNAME_TAKEN"
+
+
+def test_username_differing_only_by_case_returns_409(client, valid_user):
+    client.post("/users", json=valid_user)
+    valid_user["username"] = "SAM123"
+    assert client.post("/users", json=valid_user).status_code == 409
 
 def test_invalid_and_under_age_returns_400(client, valid_user):
     valid_user["dob"] = years_ago(10)
@@ -107,11 +127,34 @@ def test_credit_card_yes_returns_users_with_a_card(client, three_users):
     assert response.status_code == 200
     assert usernames(response) == ["card1", "card2"]
 
+
+def test_no_filter_returns_all_users(client, three_users):
+    response = client.get("/users")
+    assert response.status_code == 200
+    assert usernames(response) == ["card1", "card2", "nocard"]
+
+
+def test_credit_card_no_returns_users_without_a_card(client, three_users):
+    response = client.get("/users", params={"CreditCard": "No"})
+    assert response.status_code == 200
+    assert usernames(response) == ["nocard"]
+
+
+@pytest.mark.parametrize("value", ["yes", "YES", "no", "NO"])
+def test_filter_value_is_not_case_sensitive(client, three_users, value):
+    assert client.get("/users", params={"CreditCard": value}).status_code == 200
+
 @pytest.mark.parametrize("value", ["Maybe", "true", "1", ""])
 def test_invalid_filter_value_returns_400(client, value):
     response = client.get("/users", params={"CreditCard": value})
     assert response.status_code == 400
     assert response.json()["error"]["details"][0]["field"] == "CreditCard"
+
+
+def test_no_users_returns_an_empty_list(client):
+    response = client.get("/users")
+    assert response.status_code == 200
+    assert response.json() == []
 
 def test_responses_never_contain_the_password_or_the_full_card(client, valid_user):
     created = client.post("/users", json=valid_user)
