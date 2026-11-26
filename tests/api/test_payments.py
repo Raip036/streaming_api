@@ -3,10 +3,12 @@ import pytest
 REGISTERED_CARD = "1234567812345678"
 UNREGISTERED_CARD = "9999888877776666"
 
+
 @pytest.fixture
 def registered_card(client, valid_user):
     client.post("/users", json={**valid_user, "creditCardNumber": REGISTERED_CARD})
     return REGISTERED_CARD
+
 
 @pytest.mark.parametrize("amount", [100, 500, 999])
 def test_successful_payment_returns_201(client, registered_card, amount):

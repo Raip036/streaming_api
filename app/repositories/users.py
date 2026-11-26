@@ -1,10 +1,10 @@
 from threading import Lock
 from typing import Protocol
 
-from app.models import User 
+from app.models import User
+
 
 class UserRepository(Protocol):
-
     def add(self, user: User) -> bool: ...
 
     def exists(self, username: str) -> bool: ...
@@ -15,7 +15,6 @@ class UserRepository(Protocol):
 
 
 class InMemoryUserRepository:
-
     def __init__(self) -> None:
         self._users: dict[str, User] = {}
         self._lock = Lock()
@@ -41,14 +40,10 @@ class InMemoryUserRepository:
             users = list(self._users.values())
         if has_card is None:
             return users
-        return [user for user in users if (user.credit_card_number is not None) == has_card] #list comprehension for users with card
+        return [
+            user for user in users if (user.credit_card_number is not None) == has_card
+        ]  # list comprehension for users with card
 
     def card_exists(self, card_number: str) -> bool:
         with self._lock:
             return any(user.credit_card_number == card_number for user in self._users.values())
-        
-        
-
-
-
-

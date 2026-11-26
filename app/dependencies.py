@@ -10,8 +10,10 @@ _payment_repository = InMemoryPaymentRepository()
 def get_user_repository() -> UserRepository:
     return _user_repository
 
+
 def get_payment_repository() -> PaymentRepository:
     return _payment_repository
+
 
 def get_now() -> datetime:
     return datetime.now(UTC)

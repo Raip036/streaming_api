@@ -1,7 +1,9 @@
 from datetime import date
 
 import pytest
+
 from app.core.rules import age_on, is_adult
+
 
 @pytest.mark.parametrize(
     ("dob", "today", "expected_age"),
@@ -14,9 +16,9 @@ from app.core.rules import age_on, is_adult
         (date(1990, 1, 1), date(2026, 11, 20), 36),
     ],
 )
-
 def test_age_on_counts_whole_years(dob, today, expected_age):
     assert age_on(dob, today) == expected_age
+
 
 def test_is_adult_on_the_18th_birthday():
     assert is_adult(date(2008, 11, 20), today=date(2026, 11, 20))

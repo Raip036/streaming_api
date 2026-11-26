@@ -7,8 +7,9 @@ from app.repositories.payments import PaymentRepository
 from app.repositories.users import UserRepository
 from app.schemas.payments import PaymentCreate
 
+
 def make_payment(
-        data: PaymentCreate, users: UserRepository, payments: PaymentRepository, now: datetime
+    data: PaymentCreate, users: UserRepository, payments: PaymentRepository, now: datetime
 ) -> Payment:
     if not users.card_exists(data.credit_card_number):
         raise CardNotRegistered("This credit card is not registered to any user")

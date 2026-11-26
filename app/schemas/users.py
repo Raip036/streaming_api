@@ -9,8 +9,8 @@ from app.models import User
 USERNAME_PATTERN = r"^[A-Za-z0-9]+$"
 CARD_PATTERN = r"^[0-9]{16}$"
 
-class UserCreate(BaseModel):
 
+class UserCreate(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     username: str = Field(min_length=1, max_length=30, pattern=USERNAME_PATTERN)
@@ -25,10 +25,10 @@ class UserCreate(BaseModel):
         if len(value.encode("utf-8")) > MAX_PASSWORD_BYTES:
             raise ValueError(f"Must be at most {MAX_PASSWORD_BYTES} bytes long")
 
-        if not any (character.isupper() for character in value):
+        if not any(character.isupper() for character in value):
             raise ValueError("Must contain at least one upper-case letter")
 
-        if not any (character.isdigit() for character in value):
+        if not any(character.isdigit() for character in value):
             raise ValueError("Must contain at least one number")
         return value
 
@@ -40,13 +40,12 @@ class UserCreate(BaseModel):
         try:
             parsed = date.fromisoformat(value)
         except ValueError:
-            raise ValueError(
-                "Must be a date in ISO 8601 format, for example 1998-04-12"
-            ) from None
+            raise ValueError("Must be a date in ISO 8601 format, for example 1998-04-12") from None
         if parsed > date.today():
             raise ValueError("Must not be in the future")
         return parsed
-        
+
+
 class UserOut(BaseModel):
     """A user as shown in responses: no password, and the card masked."""
 

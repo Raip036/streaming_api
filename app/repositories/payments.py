@@ -1,12 +1,14 @@
 from threading import Lock
 from typing import Protocol
- 
+
 from app.models import Payment
+
 
 class PaymentRepository(Protocol):
     def add(self, payment: Payment) -> None: ...
 
     def find_all(self) -> list[Payment]: ...
+
 
 class InMemoryPaymentRepository:
     def __init__(self) -> None:
@@ -20,5 +22,3 @@ class InMemoryPaymentRepository:
     def find_all(self) -> list[Payment]:
         with self._lock:
             return list(self._payments)
-
-    

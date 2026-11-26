@@ -3,6 +3,7 @@ def test_health_returns_ok(client):
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
+
 def test_unknown_route_uses_the_standard_error_shape(client):
     response = client.get("/nope")
     assert response.status_code == 404

@@ -2,6 +2,7 @@ from datetime import date
 
 import pytest
 
+
 def years_ago(years: int, days_offset: int = 0) -> str:
     """An ISO date that many years before today, shifted by some days."""
     today = date.today()
@@ -10,6 +11,7 @@ def years_ago(years: int, days_offset: int = 0) -> str:
     except ValueError:  # today is 29 February and the target year has no such day
         shifted = today.replace(year=today.year - years, day=28)
     return date.fromordinal(shifted.toordinal() + days_offset).isoformat()
+
 
 def test_successful_registration_returns_201(client, valid_user):
     response = client.post("/users", json=valid_user)
@@ -29,6 +31,7 @@ def test_registration_without_a_credit_card_returns_201(client, valid_user):
 
     assert response.status_code == 201
     assert response.json()["creditCard"] is None
+
 
 @pytest.mark.parametrize(
     ("field", "bad_value"),
@@ -62,12 +65,14 @@ def test_missing_required_field_returns_400(client, valid_user, field):
     del valid_user[field]
     assert client.post("/users", json=valid_user).status_code == 400
 
+
 def test_malformed_json_returns_400(client):
     response = client.post(
         "/users", content="{not json", headers={"Content-Type": "application/json"}
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "VALIDATION_ERROR"
+
 
 def test_user_under_18_returns_403(client, valid_user):
     valid_user["dob"] = years_ago(17)
@@ -76,13 +81,16 @@ def test_user_under_18_returns_403(client, valid_user):
     assert response.status_code == 403
     assert response.json()["error"]["code"] == "UNDER_AGE"
 
+
 def test_user_who_turns_18_tomorrow_returns_403(client, valid_user):
     valid_user["dob"] = years_ago(18, days_offset=1)
     assert client.post("/users", json=valid_user).status_code == 403
 
+
 def test_user_who_turns_18_today_returns_201(client, valid_user):
     valid_user["dob"] = years_ago(18)
     assert client.post("/users", json=valid_user).status_code == 201
+
 
 def test_username_already_used_returns_409(client, valid_user):
     assert client.post("/users", json=valid_user).status_code == 201
@@ -97,10 +105,12 @@ def test_username_differing_only_by_case_returns_409(client, valid_user):
     valid_user["username"] = "SAM123"
     assert client.post("/users", json=valid_user).status_code == 409
 
+
 def test_invalid_and_under_age_returns_400(client, valid_user):
     valid_user["dob"] = years_ago(10)
     valid_user["password"] = "weak"
     assert client.post("/users", json=valid_user).status_code == 400
+
 
 def test_under_age_and_duplicate_username_returns_403(client, valid_user):
     client.post("/users", json=valid_user)
@@ -121,6 +131,7 @@ def three_users(client, valid_user):
 
 def usernames(response):
     return sorted(user["username"] for user in response.json())
+
 
 def test_credit_card_yes_returns_users_with_a_card(client, three_users):
     response = client.get("/users", params={"CreditCard": "Yes"})
@@ -144,6 +155,7 @@ def test_credit_card_no_returns_users_without_a_card(client, three_users):
 def test_filter_value_is_not_case_sensitive(client, three_users, value):
     assert client.get("/users", params={"CreditCard": value}).status_code == 200
 
+
 @pytest.mark.parametrize("value", ["Maybe", "true", "1", ""])
 def test_invalid_filter_value_returns_400(client, value):
     response = client.get("/users", params={"CreditCard": value})
@@ -155,6 +167,7 @@ def test_no_users_returns_an_empty_list(client):
     response = client.get("/users")
     assert response.status_code == 200
     assert response.json() == []
+
 
 def test_responses_never_contain_the_password_or_the_full_card(client, valid_user):
     created = client.post("/users", json=valid_user)

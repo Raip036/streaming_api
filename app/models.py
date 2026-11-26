@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from datetime import date, datetime 
+from datetime import date, datetime
+
 
 @dataclass(frozen=True)
 class User:
@@ -9,6 +10,7 @@ class User:
     dob: date
     credit_card_number: str | None
     registered_at: datetime
+
 
 @dataclass(frozen=True)
 class Payment:

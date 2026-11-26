@@ -9,7 +9,7 @@ from app.repositories.users import InMemoryUserRepository
 
 @pytest.fixture
 def client():
-    #A client whose app starts every test with empty storage.
+    # A client whose app starts every test with empty storage.
     users = InMemoryUserRepository()
     payments = InMemoryPaymentRepository()
     app.dependency_overrides[get_user_repository] = lambda: users
