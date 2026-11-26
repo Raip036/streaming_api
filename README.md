@@ -116,13 +116,17 @@ The brief left a few things open, so these are the calls I made:
 - Date of birth is a plain date (`YYYY-MM-DD`). A date in the future is treated as invalid
   input (400), not as an under-age user (403).
 - Someone who turns 18 today is allowed to register.
-- Card numbers are stored as text so leading zeros aren't lost. I only check for 16 digits,
-  because that's all the brief asks for.
+- Card numbers are sent as JSON strings (in quotes), like in the examples above, so
+  leading zeros aren't lost. I only check for 16 digits, because that's all the brief
+  asks for.
 - Two users can register the same card.
 - "Amount: 3 digits" is read as a whole number between 100 and 999.
 - If a request breaks more than one rule, the checks run in the order the brief lists
   them: 400, then 403, then 409.
 - The `CreditCard` filter accepts `Yes` and `No` in any letter case.
+- The brief talks about a registration service and a payment service. I kept them as two
+  separate parts of one app rather than two apps, because with only three endpoints
+  splitting them felt like overkill. They're separate enough that they could be split later.
 - The free trial and subscription types are mentioned in the brief but nothing is required
   of them, so I haven't built them. I do store when each user registered.
 
